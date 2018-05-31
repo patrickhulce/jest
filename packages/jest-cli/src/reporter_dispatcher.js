@@ -8,6 +8,7 @@
  */
 
 import type {Context} from 'types/Context';
+import type {TestEntry} from 'types/Circus';
 import type {Reporter, Test} from 'types/TestRunner';
 import type {TestResult, AggregatedResult} from 'types/TestResult';
 import type {ReporterOnStartOptions} from 'types/Reporters';
@@ -33,6 +34,13 @@ export default class ReporterDispatcher {
     this._reporters = this._reporters.filter(
       reporter => !(reporter instanceof ReporterClass),
     );
+  }
+
+  async onIndividualTestResult(testEntry: TestEntry) {
+    for (const reporter of this._reporters) {
+      reporter.onIndividualTestResult &&
+        (await reporter.onIndividualTestResult(testEntry));
+    }
   }
 
   async onTestResult(

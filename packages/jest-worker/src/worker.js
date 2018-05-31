@@ -164,6 +164,11 @@ export default class {
   }
 
   _receive(response: any /* Should be ParentMessage */) {
+    if (response[0] === 'test_done') {
+      this._options.onIndividualTestResult(response[1]);
+      return;
+    }
+
     const item = this._queue;
 
     if (!item) {
@@ -201,7 +206,6 @@ export default class {
 
         onProcessEnd(error, null);
         break;
-
       default:
         throw new TypeError('Unexpected response from worker: ' + response[0]);
     }

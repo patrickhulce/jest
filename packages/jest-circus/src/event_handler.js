@@ -108,6 +108,7 @@ const handler: EventHandler = (event, state): void => {
     case 'test_done': {
       event.test.duration = getTestDuration(event.test);
       event.test.status = 'done';
+      state.parentProcess.emit('test_done', {test: event.test});
       state.currentlyRunningTest = null;
       break;
     }

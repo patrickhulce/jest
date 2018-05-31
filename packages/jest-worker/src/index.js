@@ -70,6 +70,7 @@ export default class {
       forkOptions: options.forkOptions || {},
       maxRetries: options.maxRetries || 3,
       workerPath,
+      onIndividualTestResult: options.onIndividualTestResult,
     };
 
     for (let i = 0; i < numWorkers; i++) {

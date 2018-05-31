@@ -41,16 +41,25 @@ class TestRunner {
     onStart: OnTestStart,
     onResult: OnTestSuccess,
     onFailure: OnTestFailure,
+    onIndividualTestResult: any,
     options: TestRunnerOptions,
   ): Promise<void> {
     return await (options.serial
-      ? this._createInBandTestRun(tests, watcher, onStart, onResult, onFailure)
+      ? this._createInBandTestRun(
+          tests,
+          watcher,
+          onStart,
+          onResult,
+          onFailure,
+          onIndividualTestResult,
+        )
       : this._createParallelTestRun(
           tests,
           watcher,
           onStart,
           onResult,
           onFailure,
+          onIndividualTestResult,
         ));
   }
 
@@ -60,7 +69,9 @@ class TestRunner {
     onStart: OnTestStart,
     onResult: OnTestSuccess,
     onFailure: OnTestFailure,
+    onIndividualTestResult: any,
   ) {
+    process.on('test_done', evt => onIndividualTestResult(evt.test));
     process.env.JEST_WORKER_ID = '1';
     const mutex = throat(1);
     return tests.reduce(
@@ -93,6 +104,7 @@ class TestRunner {
     onStart: OnTestStart,
     onResult: OnTestSuccess,
     onFailure: OnTestFailure,
+    onIndividualTestResult: any,
   ) {
     // $FlowFixMe: class object is augmented with worker when instantiating.
     const worker: WorkerInterface = new Worker(TEST_WORKER_PATH, {
@@ -100,6 +112,7 @@ class TestRunner {
       forkOptions: {stdio: 'inherit'},
       maxRetries: 3,
       numWorkers: this._globalConfig.maxWorkers,
+      onIndividualTestResult,
     });
 
     const mutex = throat(this._globalConfig.maxWorkers);

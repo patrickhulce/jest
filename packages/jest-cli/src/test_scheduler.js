@@ -70,6 +70,10 @@ export default class TestScheduler {
   }
 
   async scheduleTests(tests: Array<Test>, watcher: TestWatcher) {
+    const onIndividualTestResult = this._dispatcher.onIndividualTestResult.bind(
+      this._dispatcher,
+    );
+
     const onStart = this._dispatcher.onTestStart.bind(this._dispatcher);
     const timings = [];
     const contexts = new Set();
@@ -191,6 +195,7 @@ export default class TestScheduler {
             onStart,
             onResult,
             onFailure,
+            onIndividualTestResult,
             {
               serial: runInBand || Boolean(testRunners[runner].isSerial),
             },
